@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #dropContainer {
+      border: 2px dashed #cccccc;
+      text-align: center;
+      padding: 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+      position: relative;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    #thumbnail {
+      max-width: 100%;
+      max-height: 100%;
+      display: none;
+    }
+
+    #dropContainer:hover {
+      background: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <div id="dropContainer">
+    <p>Drop a file here or click to select</p>
+    <input type="file" id="fileInput" accept=".jpg, .jpeg, .png" />
+    <img id="thumbnail" />
+  </div>
+
+  <div id="selectedFile">
+    <h3>Selected File:</h3>
+    <p id="selectedFileName"></p>
+  </div>
+
+  <script>
+    const dropContainer = document.getElementById('dropContainer');
+    const fileInput = document.getElementById('fileInput');
+    const selectedFileName = document.getElementById('selectedFileName');
+    const thumbnail = document.getElementById('thumbnail');
+
+    // Clicking on the drop area opens the file dialog
+    dropContainer.addEventListener('click', function() {
+      fileInput.click();
+    });
+
+    // Prevent default behavior for drag events
+    dropContainer.ondragover = dropContainer.ondragenter = function(evt) {
+      evt.preventDefault();
+      dropContainer.style.border = '2px dashed #666666';
+    };
+
+    // Restore the border on drag leave
+    dropContainer.ondragleave = function(evt) {
+      evt.preventDefault();
+      dropContainer.style.border = '2px dashed #cccccc';
+    };
+
+    dropContainer.ondrop = function(evt) {
+      evt.preventDefault();
+      dropContainer.style.border = '2px dashed #cccccc';
+
+      const files = evt.dataTransfer.files;
+
+      if (files.length > 0) {
+        const selectedFile = files[0];
+        selectedFileName.textContent = selectedFile.name;
+
+        if (selectedFile.type.startsWith('image/')) {
+          // Display the thumbnail if the selected file is an image
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            thumbnail.src = event.target.result;
+            thumbnail.style.display = 'block';
+          };
+          reader.readAsDataURL(selectedFile);
+        } else {
+          thumbnail.style.display = 'none';
+        }
+
+        fileInput.files = files;
+      }
+    };
+
+    // Handle file selection from the input element
+    fileInput.addEventListener('change', function() {
+      const files = fileInput.files;
+
+      if (files.length > 0) {
+        const selectedFile = files[0];
+        selectedFileName.textContent = selectedFile.name;
+
+        if (selectedFile.type.startsWith('image/')) {
+          // Display the thumbnail if the selected file is an image
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            thumbnail.src = event.target.result;
+            thumbnail.style.display = 'block';
+          };
+          reader.readAsDataURL(selectedFile);
+        } else {
+          thumbnail.style.display = 'none';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
